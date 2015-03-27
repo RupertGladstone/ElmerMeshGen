@@ -13,17 +13,41 @@ vx = rot90(vx) ; vy = rot90(vy) ;
 vnorm=sqrt(vx.^2+vy.^2);
 
 imagesc(vnorm); set(gca,'YDir','normal');
-fprintf('Drag mouse to select rectangle covering domain of interest\n')
-rect = getrect();
-j_b  = floor(rect(2));
-j_t  = j_b + floor(rect(4));
-i_l  = floor(rect(1));
-i_r  = i_l + floor(rect(3));
+
+
+if and(and(exist('i_l'), exist('i_r')), and(exist('j_b'), exist('j_t')))
+    fprintf('Found subregion definition from params file... \n')
+else
+    fprintf(['Drag mouse to select rectangle covering domain of ' ...
+             'interest. \n'])
+    rect = getrect();
+    j_b  = floor(rect(2));
+    j_t  = j_b + floor(rect(4));
+    i_l  = floor(rect(1));
+    i_r  = i_l + floor(rect(3));
+end
+
 nj = j_t-j_b+1 ; ni = i_r-i_l+1 ;
 
 fprintf('Zooming to your domain of interest...\n')
 xlim([i_l, i_r]);
 ylim([j_b, j_t]);
+
+if (exist('velFileOut'))
+    fprintf(['Writing velocity data to ascii file for your region... \n'])
+    vxr = vx(j_b:j_t,i_l:i_r) ; 
+    vyr = vy(j_b:j_t,i_l:i_r) ;
+    vnormr = vnorm(j_b:j_t,i_l:i_r) ;
+    fid=fopen(velFileOut,'w');
+    for jj=1:nj
+        for ii=1:ni
+            fprintf(fid,'%12.5f %12.5f %12.5f \n',vxr(jj,ii),vyr(jj,ii),vnormr(jj,ii));
+        end
+    end
+    fclose(fid);
+else
+    fprintf(['velFileOut not set in params.m, not writing vels to ascii. \n'])
+end
 
 fprintf(['Click points to define mesh ice-ocean boundary (double click ' ...
       'to end) \n'])
@@ -36,27 +60,60 @@ fprintf(['Click points to define mesh interior ice boundary (start ' ...
 
 [ib_x, ib_y] = getpts();
 
-fprintf(['Writing velocity data to ascii file for your region \n'])
-vxr = vx(j_b:j_t,i_l:i_r) ; 
-vyr = vy(j_b:j_t,i_l:i_r) ;
-vnormr = vnorm(j_b:j_t,i_l:i_r) ;
-fid=fopen(fileOut,'w');
-for jj=1:nj
-    for ii=1:ni
-        fprintf(fid,'%12.5f %12.5f %12.5f \n',vxr(jj,ii),vyr(jj,ii),vnormr(jj,ii));
+fprintf(['Writing boundaries to .geo file for gmsh. \n']);
+
+ob_x = xmin+ob_x*dx; ob_y = ymin+ob_y*dx;
+ib_x = xmin+ib_x*dx; ib_y = ymin+ib_y*dx;
+
+ib_nx = size(ib_x);ob_nx = size(ob_x);id=1;firstId = id;
+fid=fopen(boundaryFileOut,'w');
+fprintf(fid,'lc=1000;\n');
+SplineLineOB = 'Spline(1)={';
+SplineLineIB = 'Spline(2)={';
+for ii=1:ob_nx(1);
+    fprintf(fid,'Point(%i)={%12.5f,%12.5f,0.0,lc}; \n',id,ob_x(ii),ob_y(ii));
+    if (ii<ob_nx(1))
+        SplineLineOB = [SplineLineOB int2str(id) ','];
+    else
+        SplineLineOB = [SplineLineOB int2str(id) '}; \n'];
     end
+    id_lastOB=id;
+    id = id+1;
+end
+SplineLineIB = [SplineLineIB int2str(id_lastOB) ','];
+for ii=1:ib_nx(1);
+    fprintf(fid,'Point(%i)={%12.5f,%12.5f,0.0,lc}; \n',id,ib_x(ii),ib_y(ii));
+    SplineLineIB = [SplineLineIB int2str(id) ','];
+    %    if (ii<ib_nx(1))
+    %    SplineLineIB = [SplineLineIB int2str(id) ','];
+    %else
+    %    SplineLineIB = [SplineLineIB int2str(id) '}; \n'];
+    %end
+    id = id+1;
+end
+SplineLineIB = [SplineLineIB int2str(firstId) '};\n'];
+fprintf(fid,SplineLineOB);
+fprintf(fid,SplineLineIB);
+fprintf(fid,'Line Loop(3)={1,2}; \n');
+fprintf(fid,'Plane Surface(4) = {3}; \n');
+fprintf(fid,'Physical Line(5) = {1}; \n');
+fprintf(fid,'Physical Line(6) = {2}; \n');
+fprintf(fid,'Physical Surface(7) = {4}; \n');
+fclose(fid);
+
+fprintf(['Writing region parameters to text file for later use \n']);
+fid=fopen(yamsInputFile,'w');
+fprintf(fid,'DEM_nx=%i \n',ni);
+fprintf(fid,'DEM_ny=%i \n',nj);
+fprintf(fid,'DEM_xmin=%13.5f \n',xmin+i_l*dx);
+fprintf(fid,'DEM_ymin=%13.5f \n',ymin+j_b*dx);
+fprintf(fid,'DEM_dx=%10.3f \n',dx);
+fprintf(fid,'DEM_dy=%10.3f \n',dx);
+fprintf(fid,'DEM_noval=-9999999');
+if (exist('velFileOut'))
+    fprintf(fid,['VelDem=./' AAvel900_Tottenish.asc]);
 end
 fclose(fid);
 
-fprintf(['Writing region parameters to text file for later use ***' ...
-         'NYI \n'])
-
-fprintf(['Writing boundaries to .csv or .geo files***' ...
-         'NYI \n'])
-
-
-the value is given by:
- interp2(velocityField,x,y)
-
-add the last bit of ocean boundary to the start of land boundary, ...
-    and add first point of ocean boundary to last point of land boundary
+%% TODO: copy files to the refinement directory (or just read them
+%% from here?)

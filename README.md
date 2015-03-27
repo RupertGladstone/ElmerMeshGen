@@ -15,7 +15,10 @@ scalapack/lapack/blas).  There are some informal notes on installing these in in
 Directory structure
 ===================
 
-"utils" *** add notes ***
+"utils" 
+TODO:
+add text
+test yams3vtk script
 
 "drawBoundary" contains matlab scripts to facilitate creation of a boundary.  This boundary would be hand drawn 
 by interactively selecting points on a figure showing velocities (or it could easily be modified to use, for 
@@ -26,8 +29,8 @@ elevation files, along with relevant metadata.  They assume that the input data 
 this directory.  The .geo file must be renamed Contour.geo.  Use the Yams inputs file to edit the input.txt file 
 in the refineMesh directory.  Then just run make at the command line.
 
-
-"meshExtrusion" ***NYI***
+TODO:
+"meshExtrusion" 
 The refined mesh created by scripts in the above directories is a 2D footprint.  This directory contains a 
 simple elmer sif file to read in the bedrock and surface elevation data from netcdf files and extrude the 
 2D footprint mesh to 3D.
@@ -39,3 +42,6 @@ Code Improvements
 If these scripts become useful then I will try to improve/maintain them.  Email bugs to me or report through 
 github.  Same with requested improvements.
 
+TODO:
+Add mesh extrusion stuff with example simple sif.
+Modify matlabs scripts to better integrate with yams input file.

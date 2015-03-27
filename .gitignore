@@ -1,0 +1,7 @@
+*~
+mesh2D*
+*.o
+*.mod
+*.mesh
+*.geo
+*.msh

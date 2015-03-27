@@ -1,0 +1,18 @@
+
+Just run make in this directory to carry out the meshing and mesh refinement.
+This uses the code in ../src
+You need yams, gmsh and possibly other software installed, see rough notes in ../installNotes.asc
+
+Input files required:
+input.txt containing key parameters.
+Contour.geo containing a contour of the mesh boundary (in gmsh format).
+Ascii file containing velocities.
+
+The latter two of the above files are created in the drawBoundary directory.
+
+Outputs:
+Contour.mesh contains the non-refined mesh, viewable in gmsh.
+mesh2D_xxx these files are created during the refinement process and include refinement metrics.
+mesh2D.msh mesh2D.mesh are slightly different formatted versions of the final refined mesh, viewable in gmsh. 
+mesh2D directory contains the final refined mesh in Elmer format.
+

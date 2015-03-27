@@ -1,0 +1,64 @@
+&list_input
+
+! name of the file containing the velocity grid
+!VelDem='/mnt/hgfs/VM_share/AAvelocity.dem',
+VelDem='./AAvel900_Tottenish.asc',
+
+! refinement mode - 'Hessian' (the proper way) or 'VelFudge' (a hack using the 
+! velocity instead of its second derivative, to be avoided in general)
+RefMode='Hessian'
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!----- velocity grid Parameters-------!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+DEM_nx=1001 
+DEM_ny=1401 
+DEM_xmin=1700000.00000 
+DEM_ymin=-1360000.00000 
+DEM_dx=   900.000 
+DEM_dy=   900.000 
+DEM_noval=-9999999
+
+! Fab's wording: "Rayon pour le lissage (moindre carré 2D quadratique des vitesses)"
+! This is effectively a spatial scale over which the velocity data are smoothed.
+! Make it too large and velocity gradients will be smoothed out, thus potentially 
+! avoiding refinement in regions where it is needed.  Make it too small and you 
+! may revert to the missing data value in some regions where no velocity points 
+! can be found close enough to your mesh points.  Also, if you have a noisy error 
+! -filled velocity field you will need to increase this to avoid refinement due to 
+! error noise.  As a rough indicator this could be set to a few times the grid cell 
+! size (assuming you have velocity data in a regular grid).
+R=6000.0,
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!-------  Yams Parameters ------------!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! Velocity threshold to divide "interior" from "fast flow" regions.
+! I don't see why this should be needed as the refinement should take care of this. 
+! I guess it might be useful to avoid refinement in noisy slow flowing regions, but 
+! in such cases increasing R might also solve the problem.
+threshold = 999999.9,
+
+! err.  This is an error measure to be satisfied by the refienement.  The 
+! smaller the value the greater the refinement (i.e. the finer the mesh 
+! resolution).  However, the resolution is always subject to limits set 
+! by the next two parameters.
+! hmin. Minimum element size
+! hmax. Maximum element size
+
+! Parameters for the slow moving interior (ignored if threshold is set very high)
+hmin=40000.0,
+hmax=40000.0,
+err=100.0,
+
+! Parameters for the fast flow regions (or for all regions if threshold is set 
+! very high)
+hmin2=2000.0,
+hmax2=40000.0,
+err2=200.0,
+
+/
+

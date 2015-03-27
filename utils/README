@@ -12,3 +12,5 @@ The .geo file can be used in gmsh to create an approximately uniform resolution 
 Example usage:
 gmsh exampleBoundary.geo -1 -2
 
+wget ftp://sidads.colorado.edu/pub/DATASETS/nsidc0484_MEASURES_antarc_vel_V01/450m/*
+wget ftp://sidads.colorado.edu/pub/DATASETS/nsidc0484_MEASURES_antarc_vel_V01/900m/*

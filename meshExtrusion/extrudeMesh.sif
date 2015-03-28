@@ -1,0 +1,30 @@
+
+Check Keywords "Warn"
+
+Header
+  Mesh DB "." "mesh2D"
+End
+
+Simulation
+  Extruded Mesh Levels=Integer 10
+  Max Output Level = 9
+  Coordinate System = Cartesian
+  Simulation Type = Steady
+  Output Intervals(1) = 1
+  Steady State Max Iterations = 1
+End
+
+Body 1
+  Equation = 1
+End
+
+Equation 1 :: Active Solvers(1) = 1 
+
+Solver 1
+  Exec Solver = String "after timestep"
+  Equation = String "ResultOutput"
+  Procedure = File "ResultOutputSolve" "ResultOutputSolver"
+  Output File Name = File "extrudedMesh.vtu"
+  Output Format = String "vtu"
+  Vtu Format = Logical True
+End

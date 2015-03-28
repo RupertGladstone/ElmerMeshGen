@@ -5,3 +5,6 @@ mesh2D*
 *.mesh
 *.geo
 *.msh
+GeoToMesh
+Make2DMesh
+MakeGeo

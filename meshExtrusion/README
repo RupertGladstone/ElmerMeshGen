@@ -1,0 +1,15 @@
+To extrude the mesh, simply copy the 2D mesh directory from the refineMesh 
+directory and run ElmerSolver.  The .sif file has one solver to output 
+results in vtu format.  The line "Extruded Mesh Levels" in the simulation 
+section of the .sif instructs Elmer to extrude the 2D mesh.  By default 
+the extrusion is linear spaced, but there are other options, see Elmer 
+documentation (in particular the "mesh extrusion" section of the 
+ElmerSolverManual, section 9.3 at time of writing, available from 
+http://www.nic.funet.fi/pub/sci/physics/elmer/doc/).
+
+The resulting .vtu file, in mesh2D directory after running ElmerSolver, 
+can be viewed in paraview.  Note the mesh is extruded to unit height by 
+Elmer's mesh extrusion, so high vertical exaggeration is needed to see it.
+
+TODO: add solvers to read in bedrock and surface height, add structured mesh 
+mapper to map the structured mesh to the new bedrock and surface height.

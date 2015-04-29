@@ -35,15 +35,19 @@ f_out = open(geoFile,'w')
 f_out.write('lc=1000;\n')
 SplineLine = 'Spline(1)={'
 
+new_id = 0
+
 firstTime = True
 for point in points:
    point = point.rstrip()
    [x,y,id] = point.split(',')
+   new_id = new_id + 1
+   id_str = str(new_id)
    if firstTime:
-      firstId = id
-   lineOut = 'Point('+id+') = {'+x+', '+y+', 0.0, lc};\n'
+      firstId = id_str
+   lineOut = 'Point('+id_str+') = {'+x+', '+y+', 0.0, lc};\n'
    f_out.write(lineOut)
-   SplineLine = SplineLine+id+','
+   SplineLine = SplineLine+id_str+','
    firstTime = False
 
 SplineLine = SplineLine+firstId+'};\n'

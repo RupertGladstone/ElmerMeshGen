@@ -4,6 +4,10 @@ Utilities related to mesh preparation for ElmerIce.
 csv2geo.py is a python script to convert a csv (comma separated) file to a .geo file, 
 using the points to make a spline to form the boundary.
 
+2csv2geo.py is similar to csv2geo.py but for 2 csv files for the case where the two 
+files contain parts of the boundary that need separate labelling, such as grounded 
+vs floating or calving front boundary.
+
 Example usage:
 python csv2geo.py exampleBoundary.csv 
 
@@ -12,5 +16,11 @@ The .geo file can be used in gmsh to create an approximately uniform resolution 
 Example usage:
 gmsh exampleBoundary.geo -1 -2
 
+This can be viewed in gmsh interactively:
+gmsh exampleBoundary.msh &
+(double right click on the viewing panel to bring up options for viewing nodes, 
+labels etc)
+
+Notes regarding velocity data to follow...
 wget ftp://sidads.colorado.edu/pub/DATASETS/nsidc0484_MEASURES_antarc_vel_V01/450m/*
 wget ftp://sidads.colorado.edu/pub/DATASETS/nsidc0484_MEASURES_antarc_vel_V01/900m/*

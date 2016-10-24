@@ -14,7 +14,6 @@ vnorm=sqrt(vx.^2+vy.^2);
 
 imagesc(vnorm); set(gca,'YDir','normal');
 
-
 if and(and(exist('i_l'), exist('i_r')), and(exist('j_b'), exist('j_t')))
     fprintf('Found subregion definition from params file... \n')
 else
@@ -49,30 +48,41 @@ else
     fprintf(['velFileOut not set in params.m, not writing vels to ascii. \n'])
 end
 
-fprintf(['Click points to define mesh ice-ocean boundary (double click ' ...
-      'to end) \n'])
 
-[ob_x, ob_y] = getpts();
-
-fprintf(['Click points to define mesh interior ice boundary (start ' ...
-      'near end of previous points, finish near start of previous ' ...
-      'points, double click to end) \n'])
-
-[ib_x, ib_y] = getpts();
+if WholeIceSheet
+    fprintf(['Calculating contour to use as ice-ocean boundary \n'])
+    [cc, hh] = contour(vnorm,[0.01,0.01]);
+    numPoints = cc(2,1);
+    mainContour = cc(:,2:numPoints+1);
+    clear cc, hh;
+    h = plot(mainContour(1,:), mainContour(2, :), 'k');
+    ob_x = mainContour(1,:);
+    ob_y = mainContour(2,:);
+    ib_x = 0; ib_y = 0;
+else
+    fprintf(['Click points to define mesh ice-ocean boundary (double click ' ...
+             'to end) \n'])
+    [ob_x, ob_y] = getpts();
+    fprintf(['Click points to define mesh interior ice boundary (start ' ...
+             'near end of previous points, finish near start of previous ' ...
+             'points, double click to end) \n'])
+    [ib_x, ib_y] = getpts();
+end
 
 fprintf(['Writing boundaries to .geo file for gmsh. \n']);
 
 ob_x = xmin+ob_x*dx; ob_y = ymin+ob_y*dx;
 ib_x = xmin+ib_x*dx; ib_y = ymin+ib_y*dx;
 
-ib_nx = size(ib_x);ob_nx = size(ob_x);id=1;firstId = id;
+ib_nx = length(ib_x);ob_nx = length(ob_x);id=1;firstId = id;
+
 fid=fopen(boundaryFileOut,'w');
-fprintf(fid,'lc=1000;\n');
+fprintf(fid,['lc=100000;\n']);
 SplineLineOB = 'Spline(1)={';
 SplineLineIB = 'Spline(2)={';
 for ii=1:ob_nx(1);
     fprintf(fid,'Point(%i)={%12.5f,%12.5f,0.0,lc}; \n',id,ob_x(ii),ob_y(ii));
-    if (ii<ob_nx(1))
+    if ( (ii<ob_nx(1)) | WholeIceSheet )
         SplineLineOB = [SplineLineOB int2str(id) ','];
     else
         SplineLineOB = [SplineLineOB int2str(id) '}; \n'];
@@ -80,25 +90,37 @@ for ii=1:ob_nx(1);
     id_lastOB=id;
     id = id+1;
 end
-SplineLineIB = [SplineLineIB int2str(id_lastOB) ','];
-for ii=1:ib_nx(1);
-    fprintf(fid,'Point(%i)={%12.5f,%12.5f,0.0,lc}; \n',id,ib_x(ii),ib_y(ii));
-    SplineLineIB = [SplineLineIB int2str(id) ','];
-    %    if (ii<ib_nx(1))
-    %    SplineLineIB = [SplineLineIB int2str(id) ','];
-    %else
-    %    SplineLineIB = [SplineLineIB int2str(id) '}; \n'];
-    %end
-    id = id+1;
+if WholeIceSheet
+    SplineLineOB = [SplineLineOB int2str(firstId) '};\n'];
+else
+    SplineLineIB = [SplineLineIB int2str(id_lastOB) ','];
+    for ii=1:ib_nx(1);
+        fprintf(fid,'Point(%i)={%12.5f,%12.5f,0.0,lc}; \n',id,ib_x(ii),ib_y(ii));
+        SplineLineIB = [SplineLineIB int2str(id) ','];
+        %    if (ii<ib_nx(1))
+        %    SplineLineIB = [SplineLineIB int2str(id) ','];
+        %else
+        %    SplineLineIB = [SplineLineIB int2str(id) '}; \n'];
+        %end
+        id = id+1;
+    end
+    SplineLineIB = [SplineLineIB int2str(firstId) '};\n'];
 end
-SplineLineIB = [SplineLineIB int2str(firstId) '};\n'];
+
 fprintf(fid,SplineLineOB);
-fprintf(fid,SplineLineIB);
-fprintf(fid,'Line Loop(3)={1,2}; \n');
-fprintf(fid,'Plane Surface(4) = {3}; \n');
-fprintf(fid,'Physical Line(5) = {1}; \n');
-fprintf(fid,'Physical Line(6) = {2}; \n');
-fprintf(fid,'Physical Surface(7) = {4}; \n');
+if WholeIceSheet
+    fprintf(fid,'Line Loop(2)={1}; \n');
+    fprintf(fid,'Plane Surface(3) = {2}; \n');
+    fprintf(fid,'Physical Line(4) = {1}; \n');
+    fprintf(fid,'Physical Surface(5) = {3}; \n');
+else
+    fprintf(fid,SplineLineIB);
+    fprintf(fid,'Line Loop(3)={1,2}; \n');
+    fprintf(fid,'Plane Surface(4) = {3}; \n');
+    fprintf(fid,'Physical Line(5) = {1}; \n');
+    fprintf(fid,'Physical Line(6) = {2}; \n');
+    fprintf(fid,'Physical Surface(7) = {4}; \n');
+end
 fclose(fid);
 
 fprintf(['Writing region parameters to text file for later use \n']);
@@ -111,7 +133,7 @@ fprintf(fid,'DEM_dx=%10.3f \n',dx);
 fprintf(fid,'DEM_dy=%10.3f \n',dx);
 fprintf(fid,'DEM_noval=-9999999');
 if (exist('velFileOut'))
-    fprintf(fid,['VelDem=./' AAvel900_Tottenish.asc]);
+    fprintf(fid,['VelDem=./' velFileOut]);
 end
 fclose(fid);
 

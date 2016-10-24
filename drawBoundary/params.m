@@ -9,13 +9,11 @@ Longitude_of_origin =   0 ;
 Latidude_of_origin =  -90 ;
 Secant_latitude =     -71 ;
 
-
 %% TODO: remove nx and ny from here: need to get them from array
 %% size in main script
 
-ncfile = 'antarctica_ice_velocity.nc'; %% 900m resolution MEaSUREs data
-%%nx = 6223  ; ny = 6223  ; 
-dx = 900.0 ;
+ncfile = 'antarctica_ice_velocity_900m.nc'; %% 900m resolution MEaSUREs data
+nx = 6223  ; ny = 6223  ; dx = 900.0 ;
 %ncfile = 'antarctica_ice_velocity_450m.nc';
 %nx = 12445 ; ny = 12445 ; dx = 450.0 ;
 
@@ -25,9 +23,15 @@ xvelName = 'vx'; yvelName = 'vy';
 %% and bottom of the domain of interest.  Comment these out to
 %% enable interactive selection of domain of interest.
 
+%% whole domain (valid for either resolution)
+%WholeIceSheet = false(1);
+WholeIceSheet = true(1);
+i_l = 1 ; i_r = nx ;
+j_b = 1 ; j_t = ny ;
+
 %% Totten/Law Dome ish region (900m)
-i_l = 5000 ; i_r = 6000 ; % left and right in x direction
-j_b = 1600 ; j_t = 3000 ; % bottom and top in y direction
+%i_l = 5000 ; i_r = 6000 ; % left and right in x direction
+%j_b = 1600 ; j_t = 3000 ; % bottom and top in y direction
 %% Note, if all 4 corners (above) are defined then the script will
 %% zoom straight in to the subregion.  Otherwise the scrip will ask
 %% the user to interactively define the subregion.
@@ -35,11 +39,13 @@ j_b = 1600 ; j_t = 3000 ; % bottom and top in y direction
 %% name of ascii file to contain velocities for chosen subregion
 %% (comment this out to suppress writing vels to ascii)
 %velFileOut = 'AAvel900_Tottenish.asc';
+velFileOut = 'AAvel900.asc';
 
 %% name of the ascii file to newritten in gmsh format (.geo)
 %% containing the boundary points defined interactively by the
 %% user. 
-boundaryFileOut = 'TottenBoundary.geo';
+%boundaryFileOut = 'TottenBoundary.geo';
+boundaryFileOut = 'AABoundary.geo';
 
 %% name of the ascii file inwhich to write some yams input
 %% information pertaining to the grid on which the velocity data
@@ -49,7 +55,7 @@ yamsInputFile = 'yamsInput.asc';
 %% TODO: lc 
 %% lc is the 'characteristic length' which GMSH will use to
 %% determine the element size.
-lc=1000.0 ;
+%% lc=100000.0 ;
 
 
 %% TODO: see if any of the following matlab files are helpful to
@@ -65,11 +71,6 @@ lc=1000.0 ;
 %% file.  Not really essentail but would save space and having to
 %% read in large files at run time for mesh extrusion.
 
-%% whole domain (valid for either resolution)
-%i_l = 0 ; i_r = nx ;
-%j_b = 0 ; j_t = ny ;
-%fileOut = 'AAvel900.asc';
-%fileOut = 'AAvel450.asc';
 
 
 

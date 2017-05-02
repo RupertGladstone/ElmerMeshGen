@@ -1,7 +1,7 @@
 ElmerMeshGen
 ============
 
-Examples of generating refined unstructured meshes for use with Elmer multi physics finite element code.
+Examples of generating refined unstructured meshes for use with Elmer multi-physics finite element code.
 
 Author Fabien Gillet-Chaulet 2013, further modifications from Rupert Gladstone (rupertgladstone1972@gmail.com)
 

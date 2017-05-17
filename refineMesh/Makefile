@@ -24,21 +24,21 @@ Mesh2D: cleanyams cleanMesh2D compile
 #	@echo 
 #	@echo 
 #	@echo '**************************************************'
-#	@echo '**  Creating GMSH input file               ******'
+#	@echo '**  Creating GMSH input file                ******'
 #	@echo '**************************************************'
 #	$(EXEDIR)/MakeGeo
 #	@echo 
 #	@echo 
 #	@echo 
-	@echo '**************************************************'
-	@echo '**  Convert to mesh format                  ******'
-	@echo '**************************************************'
+#	@echo '**************************************************'
+#	@echo '**  Convert to mesh format                  ******'
+#	@echo '**************************************************'
 	$(EXEDIR)/GeoToMesh
 	@echo 
 	@echo 
 	@echo 
 	@echo '**************************************************'
-	@echo '**  Create 2D mesh                  ******'
+	@echo '**  Create refined mesh                     ******'
 	@echo '**************************************************'
 	$(EXEDIR)/Make2DMesh
 

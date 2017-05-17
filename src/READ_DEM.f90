@@ -33,7 +33,6 @@ subroutine  READ_DEM(DEM_fname)
   noval=DEM_noval
   
   Allocate(dem(DEM_nx,DEM_ny))
-  !'/mnt/hgfs/VM_share/GreenlandVelocity.dem'
   open(10,file=DEM_fname)
   Do j=1,DEM_ny
      Do i=1,DEM_nx

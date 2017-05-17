@@ -9,11 +9,16 @@ varid = netcdf.inqVarID(ncid,yvelName);
 vy = netcdf.getVar(ncid,varid);
 clear varid;
 netcdf.close(ncid);
-
 vx = rot90(vx) ; vy = rot90(vy) ;
 vnorm=sqrt(vx.^2+vy.^2);
 
-imagesc(vnorm); set(gca,'YDir','normal');
+imagesc(vnorm,[0,1000]); set(gca,'YDir','normal');
+
+if WholeIceSheet
+i_l = 1 ; i_r = nx ; % left and right in x direction
+j_b = 1 ; j_t = ny ; % bottom and top in y direction
+
+end
 
 if and(and(exist('i_l'), exist('i_r')), and(exist('j_b'), exist('j_t')))
     fprintf('Found subregion definition from params file... \n')
@@ -49,7 +54,6 @@ else
     fprintf(['velFileOut not set in params.m, not writing vels to ascii. \n'])
 end
 
-
 if DrawBothBoundaries
     fprintf(['Click points to define mesh ice-ocean boundary (double click ' ...
              'to end) \n'])
@@ -61,9 +65,13 @@ if (DrawBothBoundaries|DrawInlandBoundary)
              'points, double click to end) \n'])
     [ib_x, ib_y] = getpts();
 end
+
+clear vx;clear vy;clear vxr;clear vyr
+
 if (WholeIceSheet|DrawInlandBoundary)
     fprintf(['Calculating contour to use as ice-ocean boundary \n'])
     [cc, hh] = contour(vnorm,[0.01,0.01]);
+    fprintf(['done contour \n'])
     numPoints = cc(2,1);
     mainContour = cc(:,2:numPoints+1);
     clear cc, hh;

@@ -13,12 +13,14 @@ Secant_latitude =     -71 ;
 %% size in main script
 
 %ncfile = 'antarctica_ice_velocity_900m.nc'; %% 900m resolution MEaSUREs data
-ncfile = ['/mnt/hgfs/VMshare/drawBoundaryData/antarctica_ice_velocity_900m.nc'];
-nx = 6223  ; ny = 6223  ; dx = 900.0 ;
+%ncfile = ['/mnt/hgfs/VMshare/drawBoundaryData/antarctica_ice_velocity_900m.nc'];
+ncfile = ['/mnt/hgfs/VMshare/data/antarctica_ice_velocity_450m_v2.nc'];
+%nx = 6223  ; ny = 6223  ; dx = 900.0 ;
 %ncfile = 'antarctica_ice_velocity_450m.nc';
-%nx = 12445 ; ny = 12445 ; dx = 450.0 ;
+nx = 12445 ; ny = 12445 ; dx = 450.0 ;
 
-xvelName = 'vx'; yvelName = 'vy';
+%xvelName = 'vx'; yvelName = 'vy';
+xvelName = 'VX'; yvelName = 'VY';
 
 %% whole domain (valid for either resolution)
 WholeIceSheet = false(1);
@@ -26,11 +28,13 @@ WholeIceSheet = false(1);
 
 %% if wholeIceSheet is false the user should choose to either 
 %% draw both the ice front and inland boundaries...
+%DrawBothBoundaries = true(1);
 DrawBothBoundaries = false(1);
 
 %% ...or just draw the inland boundary and let a section of the
 %% whole domain boundary be used for the ice front.
 DrawInlandBoundary = true(1);
+%DrawInlandBoundary = false(1);
 
 
 %% i_ and j_ are x and y coord indices at the left and right or top
@@ -40,12 +44,15 @@ DrawInlandBoundary = true(1);
 %% Totten/Law Dome ish region (900m)
 %i_l = 5000 ; i_r = 6000 ; % left and right in x direction
 %j_b = 1600 ; j_t = 3000 ; % bottom and top in y direction
-%% Thwaites/PIG ish region
+%% Thwaites/PIG ish region (900m)
 %i_l = 1000 ; i_r = 2000 ; % left and right in x direction
 %j_b = 2400 ; j_t = 3350 ; % bottom and top in y direction
-%% Thwaites near GL
+%% Thwaites near GL (900m)
 %i_l = 1320 ; i_r = 1580 ; % left and right in x direction
 %j_b = 2530 ; j_t = 2710 ; % bottom and top in y direction
+%% Aurora Basin region (450m)
+i_l = 7700 ; i_r = 12100 ; % left and right in x direction
+j_b = 930  ; j_t = 6800 ; % bottom and top in y direction
 %% Note, if all 4 corners (above) are defined then the script will
 %% zoom straight in to the subregion.  Otherwise the script will ask
 %% the user to interactively define the subregion.
@@ -53,10 +60,10 @@ DrawInlandBoundary = true(1);
 %% name of ascii file to contain velocities for chosen subregion
 %% (comment this out to suppress writing vels to ascii)
 %velFileOut = 'AAvel900_Tottenish.asc';
-%velFileOut = 'AAvel900.asc';
+%velFileOut = 'AAvel450.asc';
 %velFileOut = 'AAvel900_ThwaitesPIG.asc';
 %velFileOut = 'AAvel900_ThwaitesHR.asc';
-velFileOut = 'AAvel900_AuroraWilkes.asc';
+%velFileOut = 'AAvel900_AuroraWilkes.asc';
 
 %% name of the ascii file to newritten in gmsh format (.geo)
 %% containing the boundary points defined interactively by the

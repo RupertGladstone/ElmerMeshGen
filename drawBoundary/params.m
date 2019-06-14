@@ -36,6 +36,13 @@ DrawBothBoundaries = false(1);
 DrawInlandBoundary = true(1);
 %DrawInlandBoundary = false(1);
 
+%% If automating the ice-ocean boundary, we can choose to use 
+%% a contour round the bedmap data instead of velocity data 
+%% (velocity is default)
+UseBedmapContour = true(1);
+BedMaskFile = '/home/elmeruser/Work/AA_processing/bedmap2_bin/bedmap2_icemask_grounded_and_shelves.flt';
+nx_bm=6667;ny_bm=6667;dx_bm=1000.0;
+xmin_bm=-3333500;ymin_bm=-3333500;
 
 %% i_ and j_ are x and y coord indices at the left and right or top
 %% and bottom of the domain of interest.  Comment these out to
@@ -47,12 +54,17 @@ DrawInlandBoundary = true(1);
 %% Thwaites/PIG ish region (900m)
 %i_l = 1000 ; i_r = 2000 ; % left and right in x direction
 %j_b = 2400 ; j_t = 3350 ; % bottom and top in y direction
+%i_l = 2200 ; i_r = 4200 ; % left and right in x direction
+%j_b = 4400 ; j_t = 6500 ; % bottom and top in y direction
+%% PIG ish...
+i_l = 2200 ; i_r = 4200 ; % left and right in x direction
+j_b = 5200 ; j_t = 6500 ; % bottom and top in y direction
 %% Thwaites near GL (900m)
 %i_l = 1320 ; i_r = 1580 ; % left and right in x direction
 %j_b = 2530 ; j_t = 2710 ; % bottom and top in y direction
 %% Aurora Basin region (450m)
-i_l = 7700 ; i_r = 12100 ; % left and right in x direction
-j_b = 930  ; j_t = 6800 ; % bottom and top in y direction
+%i_l = 7700 ; i_r = 12100 ; % left and right in x direction
+%j_b = 930  ; j_t = 6800 ; % bottom and top in y direction
 %% Note, if all 4 corners (above) are defined then the script will
 %% zoom straight in to the subregion.  Otherwise the script will ask
 %% the user to interactively define the subregion.
@@ -62,27 +74,24 @@ j_b = 930  ; j_t = 6800 ; % bottom and top in y direction
 %velFileOut = 'AAvel900_Tottenish.asc';
 %velFileOut = 'AAvel450.asc';
 %velFileOut = 'AAvel900_ThwaitesPIG.asc';
+%velFileOut = 'AAvel450_ThwaitesPIG.asc';
 %velFileOut = 'AAvel900_ThwaitesHR.asc';
 %velFileOut = 'AAvel900_AuroraWilkes.asc';
+velFileOut = 'AAvel450_PIGish.asc';
 
 %% name of the ascii file to newritten in gmsh format (.geo)
 %% containing the boundary points defined interactively by the
 %% user. 
 %boundaryFileOut = 'TottenBoundary.geo';
 %boundaryFileOut = 'AABoundary.geo';
-%boundaryFileOut = 'ThwaitesPIGBoundary.geo';
+boundaryFileOut = 'ThwaitesPIGBoundary.geo';
 %boundaryFileOut = 'ThwaitesHRBoundary.geo';
-boundaryFileOut = 'AurWilkesBoundary.geo';
+%boundaryFileOut = 'AurWilkesBoundary.geo';
 
 %% name of the ascii file in which to write some yams input
 %% information pertaining to the grid on which the velocity data
 %% are stored.
 yamsInputFile = 'yamsInput.asc';
-
-%% TODO: lc 
-%% lc is the 'characteristic length' which GMSH will use to
-%% determine the element size.
-%% lc=100000.0 ;
 
 
 %% TODO: see if any of the following matlab files are helpful to

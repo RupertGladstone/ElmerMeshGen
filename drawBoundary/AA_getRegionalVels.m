@@ -12,7 +12,8 @@ netcdf.close(ncid);
 vx = rot90(vx) ; vy = rot90(vy) ;
 vnorm=sqrt(vx.^2+vy.^2);
 
-imagesc(vnorm,[0,1000]); set(gca,'YDir','normal');
+figure(1)
+imagesc(vnorm,[0,500]); set(gca,'YDir','normal');
 
 if WholeIceSheet
 i_l = 1 ; i_r = nx ; % left and right in x direction
@@ -69,13 +70,34 @@ end
 clear vx;clear vy;clear vxr;clear vyr
 
 if (WholeIceSheet|DrawInlandBoundary)
-    fprintf(['Calculating contour to use as ice-ocean boundary \n'])
-    [cc, hh] = contour(vnorm,[0.01,0.01]);
-    fprintf(['done contour \n'])
-    numPoints = cc(2,1);
-    mainContour = cc(:,2:numPoints+1);
-    clear cc, hh;
-    %    h = plot(mainContour(1,:), mainContour(2, :), 'k');
+    if (UseBedmapContour)
+        fid=fopen(BedMaskFile,'r','l');
+        IceMask=fread(fid,[nx_bm,ny_bm],'float32');
+        fclose(fid);
+        IceMask(IceMask==0)=1;
+        IceMask = rot90(IceMask); 
+        figure(2)
+        [cc, hh] = contour(IceMask,[-5000.0,-5000.0]);
+        counter=1;
+        longest=1;
+        while (counter<length(cc))
+            if  (cc(2,counter)>longest)
+                longest=cc(2,counter);
+                counter_keep=counter;
+            end
+            counter=counter+cc(2,counter)+1;
+        end
+        stInd=counter_keep;
+        numPoints = cc(2,stInd);
+        mainContour = cc(:,1+stInd:numPoints+stInd);       
+    else
+        fprintf(['Calculating contour to use as ice-ocean boundary \n'])
+        [cc, hh] = contour(vnorm,[0.01,0.01]);
+        fprintf(['done contour \n'])
+        numPoints = cc(2,1);
+        mainContour = cc(:,2:numPoints+1);
+        clear cc, hh;
+    end
     ob_x = mainContour(1,:);
     ob_y = mainContour(2,:);
     ob_x = ob_x';ob_y = ob_y';
@@ -86,7 +108,11 @@ end
 
 fprintf(['Writing boundaries to .geo file for gmsh. \n']);
 
-ob_x = xmin+ob_x*dx; ob_y = ymin+ob_y*dx;
+if (UseBedmapContour)
+    ob_x = xmin_bm+ob_x*dx_bm; ob_y = ymin_bm+ob_y*dx_bm;
+else
+    ob_x = xmin+ob_x*dx; ob_y = ymin+ob_y*dx;
+end
 ib_x = xmin+ib_x*dx; ib_y = ymin+ib_y*dx;
 
 if (DrawInlandBoundary)
